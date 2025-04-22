@@ -1,0 +1,209 @@
+// Include important C++ libraries here
+#include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
+#include <iostream>
+#include <sstream>
+#include <vector>
+ 
+//Make the code easier to type with "using namespace"
+using namespace sf;
+using namespace std;
+ 
+// Generate random number between 1 and 3 inclusive
+int GenerateRandomNumber()
+{
+    int randomNumber = (rand() % 5) + 1;            // change the size here
+    return randomNumber - 1;
+}
+ 
+// Calulate the midpoint between the user point and the designated random point
+Vector2f GenerateMidpoint(Vector2f userPoint, Vector2f randomPoint)
+{
+    Vector2f midPoint;
+ 
+    midPoint.x = (userPoint.x + randomPoint.x) / 2;
+    midPoint.y = (userPoint.y + randomPoint.y) / 2;
+ 
+    return midPoint;
+}
+ 
+int main()
+{
+    // Create a video mode object
+    VideoMode vm(1920, 1080);
+    // Create and open a window for the game
+    RenderWindow window(vm, "Chaos Game!!", Style::Default);
+    
+    vector<Vector2f> vertices;
+    vector<Vector2f> points;
+ 
+    Font font;
+ 
+    if(!font.loadFromFile("/usr/share/fonts/truetype/ubuntu/UbuntuSans[wdth,wght].ttf"))
+    {
+        cout << "Unable to load UbuntuSans from memory" << endl;
+        return -1;
+    }
+ 
+    Text userText("Please complete your triangle", font, 24);
+    userText.setFillColor(Color::White);
+    userText.setPosition(150, 50);
+ 
+    int randomVertexPoint = GenerateRandomNumber();
+    int previousRandomVertexPoint = (vertices.size() == 5) ? randomVertexPoint : GenerateRandomNumber();
+ 
+    srand(time(NULL));
+ 
+    // for(int i = 0; i < 5; i++)
+    // {
+    //  randomVertexPoint = GenerateRandomNumber();
+    //  cout << randomVertexPoint << endl;
+    // }
+ 
+    while (window.isOpen())
+    {
+        /*
+        ****************************************
+        Handle the players input
+        ****************************************
+        */
+ 
+        Event event;
+        while (window.pollEvent(event))
+        {
+            if (event.type == Event::Closed)
+            {
+                // Quit the game when the window is closed
+                window.close();
+            }
+            if (event.type == sf::Event::MouseButtonPressed)
+            {
+                if (event.mouseButton.button == sf::Mouse::Left)
+                {
+                    std::cout << "the left button was pressed" << std::endl;
+                    std::cout << "mouse x: " << event.mouseButton.x << std::endl;
+                    std::cout << "mouse y: " << event.mouseButton.y << std::endl;
+        
+                    if(vertices.size() < 5) // change the size here
+                    {
+                        vertices.push_back(Vector2f(event.mouseButton.x, event.mouseButton.y));
+                    }
+                    else if(points.size() == 0)
+                    {
+                        ///fourth click
+                        ///push back to points vector
+                        points.push_back(Vector2f(event.mouseButton.x, event.mouseButton.y));
+                    }
+                }
+            }
+        }
+        if (Keyboard::isKeyPressed(Keyboard::Escape))
+        {
+            window.close();
+        }
+        /*
+        ****************************************
+        Update
+        ****************************************
+        */
+    
+        if(points.size() > 0)
+        {
+            ///generate more point(s)
+            ///select random vertex
+            ///calculate midpoint between random vertex and the last point in the vector
+            ///push back the newly generated coord.
+            Vector2f midPoint;
+            // Reminder: GenerateRandomNumber() generates random number between 1 and 3 inclusive
+            while(points.size() < 20000)
+            {
+                randomVertexPoint = GenerateRandomNumber();
+                if(vertices.size() == 4)
+                {
+                    while(randomVertexPoint == previousRandomVertexPoint)
+                    {
+                        randomVertexPoint = GenerateRandomNumber();
+                    }
+                }
+                else if(vertices.size() == 5)
+                {
+                    // previousRandomVertexPoint = randomVertexPoint;
+                    int sum = (previousRandomVertexPoint + 2) % 5;
+                    int difference = (((previousRandomVertexPoint - 2) % 5) + 5) % 5;
+                    while(randomVertexPoint == sum || randomVertexPoint == difference)
+                    {
+                        randomVertexPoint = GenerateRandomNumber();
+ 
+                        cout << endl;
+                        cout << "sum: " << sum << endl;
+                        cout << "difference: " << difference << endl;
+                        cout << "randomVertexPoint: " << randomVertexPoint << endl;
+                        cout << endl;
+                    }
+                    cout << "done iterating randomVertexPoint" << endl;
+                    cout << "sum: " << sum << endl;
+                    cout << "difference: " << difference << endl;
+                    cout << "randomVertexPoint: " << randomVertexPoint << endl;
+                    // cout << endl;
+                    // cout << "sum: " << sum << endl;
+                    // cout << "difference: " << difference << endl;
+                    // cout << "randomVertexPoint: " << randomVertexPoint << endl;
+                    // cout << endl;
+                }
+                if(vertices.size() > 3)
+                {
+                    previousRandomVertexPoint = randomVertexPoint;
+                }
+                
+                // cout << "\nrandomVertexPoint:\n";
+                // cout << "------------------\n";
+                // cout << randomVertexPoint << "\n\n";
+ 
+                midPoint = GenerateMidpoint(points[points.size() - 1], vertices[randomVertexPoint]);
+ 
+                // cout << "midPoint:\n";
+                // cout << "---------\n";
+                // cout << "(" << midPoint.x << ", " << midPoint.y << ")\n";
+ 
+                // cout << "\nvertices[" << randomVertexPoint << "]:\n";
+                // cout << "------------\n";
+                // cout << "(" << vertices[randomVertexPoint].x << ", " << vertices[randomVertexPoint].y << ")\n";
+ 
+                points.push_back(midPoint);
+            }
+        }
+    
+        /*
+        ****************************************
+        Draw
+        ****************************************
+        */
+        window.clear();
+        for(size_t i = 0; i < vertices.size(); i++)
+        {
+            RectangleShape rect(Vector2f(10,10));
+            rect.setPosition(Vector2f(vertices[i].x, vertices[i].y));
+            rect.setFillColor(Color::Blue);
+            window.draw(rect);
+        }
+        ///TODO:  Draw points
+        for(size_t i = 0; i < points.size(); i++)
+        {
+            RectangleShape rect(Vector2f(10, 10));
+            rect.setPosition(Vector2f(points[i].x, points[i].y));
+            if(i == 0)
+            {
+                //  The color of the point the user clicks is yellow
+                rect.setFillColor(Color::Yellow);
+            }
+            else
+            {
+                //  The colors the points the computer generates are red
+                rect.setFillColor(Color::Red);
+            }
+            window.draw(rect);
+        }
+        window.draw(userText);
+        window.display();
+    }
+}
