@@ -40,17 +40,16 @@ int main()
 	
 	vector<Vector2f> vertices;
 	vector<Vector2f> points;
-
-    Font font;
-
-    if(!font.loadFromFile("/usr/share/fonts/truetype/ubuntu/UbuntuSans[wdth,wght].ttf"))
-    {
+	
+	Font font;
+	if(!font.loadFromFile("/usr/share/fonts/truetype/ubuntu/UbuntuSans[wdth,wght].ttf"))
+	{
         if (!font.loadFromFile("C:/Windows/Fonts/arial.ttf"))
 	{
 		cout << "Unable to load UbuntuSans from memory" << endl;
 		return -1;
 	}
-    }
+	}
 
 	Text userText;
 	userText.setFont(font);
