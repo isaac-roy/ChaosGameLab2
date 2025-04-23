@@ -49,7 +49,7 @@ int main()
 	{
 		cout << "Unable to load UbuntuSans from memory" << endl;
 		return -1;
-}
+	}
     }
 
 	Text userText;
