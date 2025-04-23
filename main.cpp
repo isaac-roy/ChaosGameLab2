@@ -45,8 +45,11 @@ int main()
 
     if(!font.loadFromFile("/usr/share/fonts/truetype/ubuntu/UbuntuSans[wdth,wght].ttf"))
     {
-        cout << "Unable to load UbuntuSans from memory" << endl;
-        return -1;
+        if (!font.loadFromFile("C:/Windows/Fonts/arial.ttf"))
+	{
+		cout << "Unable to load UbuntuSans from memory" << endl;
+		return -1;
+}
     }
 
 	Text userText;
